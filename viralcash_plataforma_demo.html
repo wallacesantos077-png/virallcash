@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ViralCash — Plataforma de Recompensas</title>
+<style>
+:root{--bg:#070707;--panel:#141414;--panel2:#1d1d1d;--gold:#ffd21a;--green:#38e27b;--muted:#aaa;--line:#343434}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}
+.container{width:min(100%,980px);margin:auto;padding:18px}
+header{background:linear-gradient(135deg,#111,#211d08);border:1px solid #7e6500;border-radius:24px;padding:26px;margin-bottom:16px}
+.logo{font-size:30px;font-weight:900;color:var(--gold)} .tag{color:#ddd;margin-top:5px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+nav button{background:#191919;border:1px solid var(--line);color:#fff;border-radius:12px;padding:11px 14px;font-weight:700;cursor:pointer}
+nav button.active{background:var(--gold);color:#111;border-color:var(--gold)}
+.section{display:none}.section.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.stat{font-size:26px;font-weight:900;color:var(--green);margin-top:7px}
+.muted{color:var(--muted);line-height:1.45}
+.progress{height:12px;background:#2b2b2b;border-radius:99px;overflow:hidden;margin:12px 0}
+.progress>div{height:100%;width:0;background:var(--gold);transition:.25s}
+.task{display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid var(--line);padding:15px 0}
+.task:first-child{border-top:0}.task h3{margin:0 0 5px;font-size:16px}
+.btn{border:0;background:var(--gold);color:#111;font-weight:900;border-radius:11px;padding:11px 13px;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+input{width:100%;padding:13px;background:#0d0d0d;color:#fff;border:1px solid #444;border-radius:10px;margin:7px 0 13px}
+label{font-weight:700;font-size:14px}
+.notice{background:#171717;border-left:4px solid var(--gold);padding:14px;border-radius:10px;color:#ddd;line-height:1.5}
+.success{color:var(--green);font-weight:800;margin-top:10px}
+footer{padding:25px 0;color:#777;text-align:center;font-size:13px}
+.small{font-size:13px;color:#999}
+ul{line-height:1.65;color:#ccc}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <div class="logo">▶ VIRALCASH</div>
+  <div class="tag">ASSISTA • CURTA • PARTICIPE</div>
+  <h1>Plataforma de tarefas e recompensas</h1>
+  <p class="muted">Demonstração de uma plataforma em que participantes cumprem tarefas elegíveis e acumulam pontos conforme regras previamente divulgadas.</p>
+</header>
+
+<nav>
+  <button class="active" onclick="show('inicio',this)">Início</button>
+  <button onclick="show('cadastro',this)">Cadastro</button>
+  <button onclick="show('tarefas',this)">Tarefas</button>
+  <button onclick="show('saldo',this)">Meu saldo</button>
+  <button onclick="show('pix',this)">Pix</button>
+  <button onclick="show('regras',this)">Regras</button>
+</nav>
+
+<section id="inicio" class="section active">
+  <div class="grid">
+    <div class="card"><div class="small">Pontos acumulados</div><div class="stat" id="pointsHome">0</div></div>
+    <div class="card"><div class="small">Progresso da meta</div><div class="stat" id="progressHome">0%</div></div>
+    <div class="card"><div class="small">Valor demonstrativo</div><div class="stat" id="balanceHome">R$ 0,00</div></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>Como funciona</h2>
+    <ol class="muted">
+      <li>Faça seu cadastro.</li>
+      <li>Acesse as tarefas disponíveis.</li>
+      <li>Conclua somente as tarefas elegíveis e acumule pontos.</li>
+      <li>Acompanhe sua meta e o saldo correspondente, conforme as regras.</li>
+      <li>Quando atingir o mínimo de resgate, cadastre sua chave Pix.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="cadastro" class="section">
+  <div class="card">
+    <h2>Cadastro do cliente</h2>
+    <label>Nome</label><input id="name" placeholder="Seu nome">
+    <label>E-mail</label><input id="email" type="email" placeholder="seu@email.com">
+    <label>CPF (opcional nesta demonstração)</label><input placeholder="Somente se realmente necessário e com política de privacidade adequada">
+    <button class="btn" onclick="register()">Criar cadastro</button>
+    <div id="registerMsg"></div>
+  </div>
+</section>
+
+<section id="tarefas" class="section">
+  <div class="card">
+    <h2>Metas e tarefas</h2>
+    <p class="muted">Nesta demonstração, cada tarefa concluída soma pontos. A plataforma real deve verificar as ações e publicar os critérios de elegibilidade.</p>
+    <div class="progress"><div id="bar"></div></div>
+    <p><strong id="metaText">0 / 1.000 pontos</strong></p>
+    <div id="taskList"></div>
+  </div>
+</section>
+
+<section id="saldo" class="section">
+  <div class="grid">
+    <div class="card"><div class="small">Pontos</div><div class="stat" id="points">0</div></div>
+    <div class="card"><div class="small">Saldo</div><div class="stat" id="balance">R$ 0,00</div></div>
+    <div class="card"><div class="small">Mínimo para resgate</div><div class="stat">1.000 pts</div></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>Meta</h2>
+    <div class="progress"><div id="bar2"></div></div>
+    <p class="muted">O saldo exibido é calculado pela regra demonstrativa de 100 pontos = R$ 1,00.</p>
+  </div>
+</section>
+
+<section id="pix" class="section">
+  <div class="card">
+    <h2>Chave Pix</h2>
+    <p class="muted">Informe a chave somente quando houver um pagamento real devido e após conferir os dados.</p>
+    <label>Tipo de chave</label>
+    <input id="pixType" placeholder="CPF, e-mail, telefone ou aleatória">
+    <label>Chave Pix</label>
+    <input id="pixKey" placeholder="Sua chave">
+    <button class="btn" onclick="savePix()">Salvar chave</button>
+    <div id="pixMsg"></div>
+    <div class="notice" style="margin-top:15px">
+      <strong>Importante:</strong> este modelo não cobra taxa, depósito ou pagamento antecipado para liberar saldo ou resgate.
+    </div>
+  </div>
+</section>
+
+<section id="regras" class="section">
+  <div class="card">
+    <h2>Regras da recompensa</h2>
+    <ul>
+      <li>O participante recebe pontos somente por tarefas que estejam efetivamente disponíveis e sejam concluídas conforme os critérios publicados.</li>
+      <li>A conversão demonstrativa é de <strong>100 pontos = R$ 1,00</strong>.</li>
+      <li>O mínimo demonstrativo para solicitar resgate é <strong>1.000 pontos (R$ 10,00)</strong>.</li>
+      <li>Não existe cobrança antecipada para liberar pagamento.</li>
+      <li>Qualquer alteração nas regras deve ser comunicada antes de afetar tarefas já concluídas.</li>
+      <li>Pagamentos reais dependem da existência de recursos e do cumprimento das condições anunciadas.</li>
+      <li>Use apenas conteúdos e atividades para os quais você tenha autorização e respeite as regras das plataformas externas.</li>
+    </ul>
+    <div class="notice">
+      <strong>Transparência:</strong> os números, vídeos, usuários e valores desta página são demonstrativos. Substitua-os por dados verdadeiros antes de publicar.
+    </div>
+  </div>
+</section>
+
+<footer>ViralCash — protótipo demonstrativo. Antes de publicar, implemente servidor, autenticação, banco de dados, privacidade, termos de uso e processamento de pagamentos reais.</footer>
+</div>
+
+<script>
+let points=0, registered=false;
+const goal=1000, valuePer100=1;
+const tasks=[
+  ["Assistir vídeo de apresentação",120],
+  ["Curtir conteúdo elegível",80],
+  ["Seguir um criador participante",100],
+  ["Compartilhar conteúdo autorizado",150],
+  ["Concluir quiz sobre o conteúdo",200],
+  ["Meta diária especial",250]
+];
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+function money(){return "R$ "+(points/100).toFixed(2).replace(".",",")}
+function update(){
+  let pct=Math.min(100,Math.round(points/goal*100));
+  document.getElementById('points').textContent=points;
+  document.getElementById('pointsHome').textContent=points;
+  document.getElementById('balance').textContent=money();
+  document.getElementById('balanceHome').textContent=money();
+  document.getElementById('progressHome').textContent=pct+"%";
+  document.getElementById('bar').style.width=pct+"%";
+  document.getElementById('bar2').style.width=pct+"%";
+  document.getElementById('metaText').textContent=Math.min(points,goal)+" / "+goal+" pontos";
+}
+function renderTasks(){
+  const box=document.getElementById('taskList'); box.innerHTML="";
+  tasks.forEach((t,i)=>{
+    const row=document.createElement('div'); row.className="task";
+    row.innerHTML=`<div><h3>${t[0]}</h3><div class="small">+${t[1]} pontos</div></div><button class="btn" onclick="complete(${i},this)">Concluir</button>`;
+    box.appendChild(row);
+  });
+}
+function complete(i,btn){
+  if(!registered){alert("Faça o cadastro antes de iniciar as tarefas.");show('cadastro');return}
+  points=Math.min(goal,points+tasks[i][1]); btn.disabled=true; btn.textContent="Concluída"; update();
+}
+function register(){
+  const n=document.getElementById('name').value.trim(), e=document.getElementById('email').value.trim();
+  if(!n||!e){alert("Preencha nome e e-mail.");return}
+  registered=true; document.getElementById('registerMsg').innerHTML='<div class="success">Cadastro demonstrativo criado com sucesso.</div>';
+}
+function savePix(){
+  const k=document.getElementById('pixKey').value.trim();
+  if(!k){alert("Informe a chave Pix.");return}
+  document.getElementById('pixMsg').innerHTML='<div class="success">Chave salva nesta demonstração.</div>';
+}
+renderTasks(); update();
+</script>
+</body>
+</html>
